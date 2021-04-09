@@ -144,7 +144,7 @@ if(${PROJECT_NAME}_SUPERBUILD)
     SOURCE_DIR LeapCxx
     BINARY_DIR ${CMAKE_BINARY_DIR}/LeapCxx-build
     GIT_REPOSITORY git://github.com/Slicer/LeapCxx
-    GIT_TAG 7dd58ee78ba36bfe30f168f14bf93275d699de87 # leapmotion-python-distributions-0.1.0-2018-08-08-bc659293c
+    GIT_TAG 79b9909f03dd3fff94b84bb395fe7bd9a2a65b60 # leapmotion-python-distributions-0.1.0-2018-08-08-bc659293c
     ${_ep_common_arguments}
     CMAKE_CACHE_ARGS
       -DBUILD_PYTHON_SWIG_BINDINGS:BOOL=ON
@@ -190,9 +190,17 @@ if(${PROJECT_NAME}_SUPERBUILD)
 else()
 
   # Install LeapCxx
-  install(CODE "
-message(STATUS \"Install LeapCxx project\")
+  message(STATUS "Adding install rules for components:")
+  foreach(component IN ITEMS RuntimeLibraries)
+    message(STATUS "  ${component}")
+    install(CODE "
+unset(CMAKE_INSTALL_COMPONENT)
+set(COMPONENT \"${component}\")
+set(CMAKE_INSTALL_DO_STRIP 1)
+message(STATUS \"Install component '${component}' of LeapCxx project\")
 include\(\"${LeapCxx_DIR}/cmake_install.cmake\")
+unset(CMAKE_INSTALL_COMPONENT)
 ")
+  endforeach()
 
 endif()
