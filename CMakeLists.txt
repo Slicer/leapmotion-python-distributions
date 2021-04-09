@@ -144,7 +144,7 @@ if(${PROJECT_NAME}_SUPERBUILD)
     SOURCE_DIR LeapCxx
     BINARY_DIR ${CMAKE_BINARY_DIR}/LeapCxx-build
     GIT_REPOSITORY git://github.com/Slicer/LeapCxx
-    GIT_TAG 032794363a7f0e9c3c37367c7d5a7667e24d7602 # leapmotion-python-distributions-0.1.0-2018-08-08-bc659293c
+    GIT_TAG 7dd58ee78ba36bfe30f168f14bf93275d699de87 # leapmotion-python-distributions-0.1.0-2018-08-08-bc659293c
     ${_ep_common_arguments}
     CMAKE_CACHE_ARGS
       -DBUILD_PYTHON_SWIG_BINDINGS:BOOL=ON
