@@ -29,6 +29,24 @@ if(${PROJECT_NAME}_SUPERBUILD)
   #-----------------------------------------------------------------------------
   include(ExternalProject)
 
+  # Add an empty external project
+  function(lmpd_ExternalProject_Add_Empty proj depends)
+    set(depends_args)
+    if(NOT depends STREQUAL "")
+      set(depends_args DEPENDS ${depends})
+    endif()
+    ExternalProject_add(${proj}
+      SOURCE_DIR ${CMAKE_BINARY_DIR}/${proj}
+      DOWNLOAD_COMMAND ""
+      UPDATE_COMMAND ""
+      CONFIGURE_COMMAND ""
+      BUILD_COMMAND ""
+      BUILD_IN_SOURCE 1
+      INSTALL_COMMAND ""
+      ${depends_args}
+      )
+  endfunction()
+
   set(_ep_common_arguments "")
   foreach(_cmake_option IN ITEMS
     CMAKE_BUILD_PARALLEL_LEVEL
@@ -47,7 +65,7 @@ if(${PROJECT_NAME}_SUPERBUILD)
   endforeach()
 
   message(STATUS "SuperBuild - ${PROJECT_NAME} => Requires LeapCxx")
-  message(STATUS "SuperBuild -   LeapCxx => Requires LeapSDK")
+  message(STATUS "SuperBuild -   LeapCxx => Requires LeapSDK, SWIG")
 
   #
   # LeapSDK
@@ -87,6 +105,39 @@ if(${PROJECT_NAME}_SUPERBUILD)
   message(STATUS "SuperBuild -     LeapSDK_DIR: ${LeapSDK_DIR}")
 
   #
+  # SWIG
+  #
+  if(WIN32)
+    set(SWIG_SHA512 "b8f105f9b9db6acc1f6e3741990915b533cd1bc206eb9645fd6836457fd30789b7229d2e3219d8e35f2390605ade0fbca493ae162ec3b4bc4e428b57155db03d")
+    set(SWIG_URL "https://simpleitk.org/SimpleITKExternalData/SHA512/${SWIG_SHA512}")
+    set(SWIG_FILENAME "swigwin-4.0.2.zip")
+    set(SWIG_HASH "SHA512=${SWIG_SHA512}")
+    ExternalProject_add(SWIG
+      SOURCE_DIR ${CMAKE_BINARY_DIR}/SWIG
+      URL ${SWIG_URL}
+      URL_HASH ${SWIG_HASH}
+      DOWNLOAD_NAME ${SWIG_FILENAME}
+      DOWNLOAD_DIR ${CMAKE_BINARY_DIR}
+      USES_TERMINAL_DOWNLOAD 1
+      CONFIGURE_COMMAND ""
+      BUILD_COMMAND ""
+      BUILD_IN_SOURCE 1
+      INSTALL_COMMAND ""
+      )
+    set(SWIG_EXECUTABLE ${CMAKE_BINARY_DIR}/SWIG/swig.exe)
+    message(STATUS "SuperBuild -     SWIG[OK]")
+    message(STATUS "SuperBuild -     SWIG_URL: ${LeapSDK_URL}")
+    message(STATUS "SuperBuild -     SWIG_FILENAME: ${LeapSDK_FILENAME}")
+    message(STATUS "SuperBuild -     SWIG_HASH: ${LeapSDK_HASH}")
+    message(STATUS "SuperBuild -     SWIG_EXECUTABLE: ${SWIG_EXECUTABLE}")
+  else()
+    lmpd_ExternalProject_Add_Empty(SWIG "")
+    find_package(SWIG 3.0 REQUIRED)
+    message(STATUS "SuperBuild -     SWIG[OK]")
+    message(STATUS "SuperBuild -     SWIG_EXECUTABLE: ${SWIG_EXECUTABLE}")
+  endif()
+
+  #
   # LeapCxx
   #
   ExternalProject_add(LeapCxx
@@ -100,12 +151,14 @@ if(${PROJECT_NAME}_SUPERBUILD)
       -DBUILD_SAMPLES:BOOL=OFF
       -DBUILD_TESTING:BOOL=OFF
       -DLeapSDK_DIR:PATH=${LeapSDK_DIR}
+      -DSWIG_EXECUTABLE:FILEPATH=${SWIG_EXECUTABLE}
     USES_TERMINAL_DOWNLOAD 1
     USES_TERMINAL_CONFIGURE 1
     USES_TERMINAL_BUILD 1
     INSTALL_COMMAND ""
     DEPENDS
       LeapSDK-binary-download
+      SWIG
     )
   set(LeapCxx_DIR "${CMAKE_BINARY_DIR}/LeapCxx-build")
 
