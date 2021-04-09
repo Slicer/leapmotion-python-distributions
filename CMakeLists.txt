@@ -178,6 +178,7 @@ if(${PROJECT_NAME}_SUPERBUILD)
       -D${PROJECT_NAME}_SUPERBUILD:BOOL=0
       -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
       -DLeapCxx_DIR:PATH=${LeapCxx_DIR}
+      -DLeapSDK_DIR:PATH=${LeapSDK_DIR}
     USES_TERMINAL_CONFIGURE 1
     USES_TERMINAL_BUILD 1
     INSTALL_COMMAND ""
@@ -188,6 +189,15 @@ if(${PROJECT_NAME}_SUPERBUILD)
   message(STATUS "SuperBuild - ${PROJECT_NAME}[OK]")
 
 else()
+
+  # Extract location of LeapC library
+  find_package(LeapSDK REQUIRED)
+  get_target_property(leapc_location LeapSDK::LeapC IMPORTED_LOCATION_RELEASE)
+
+  # Install LeapSDK
+  if(leapc_location)
+    install(FILES ${leapc_location} DESTINATION lib COMPONENT RuntimeLibraries)
+  endif()
 
   # Install LeapCxx
   message(STATUS "Adding install rules for components:")
