@@ -140,3 +140,11 @@ The instructions below assumes you have a Slicer build tree compiled using `Visu
    'float_array_frompointer',
    'weakref']
   ```
+
+## Licenses
+
+This project is distributed under the Apache 2.0 license. Please see the _LICENSE_ file for details.
+
+The LeapCXX project is distributed under the Apache 2.0 license. Please, see [LICENSE](https://github.com/leapmotion/LeapCxx/blob/master/LICENSE.txt) file for details.
+
+Use subject to the terms of the Leap Motion SDK Agreement available at https://developer.leapmotion.com/sdk_agreement.
